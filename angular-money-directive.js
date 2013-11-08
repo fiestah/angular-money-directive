@@ -27,6 +27,11 @@ angular.module('fiestah.money', [])
 
       // Returning NaN so that the formatter won't render invalid chars
       ctrl.$parsers.push(function(value) {
+        // Handle leading decimal point, like ".5"
+        if (value === '.') {
+          ctrl.$setValidity('number', true);
+          return 0;
+        }
 
         // Allow "-" inputs only when min < 0
         if (value === '-') {
