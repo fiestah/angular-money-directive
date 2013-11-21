@@ -85,7 +85,7 @@ angular.module('fiestah.money', [])
         return value ? round(value) : value;
       });
       ctrl.$formatters.push(function (value) {
-        return value ? value.toFixed(2) : value;
+        return value ? parseFloat(value).toFixed(2) : value;
       });
 
       el.bind('blur', function () {
