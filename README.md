@@ -2,19 +2,16 @@
 
 This directive validates monetary inputs in "42.53" format (some additional work is needed for "32,00" Europoean formats). Note that this is _not_ designed to work with currency symbols. It largely behaves like Angular's implementation of `type="number"`.
 
-It does:
+It does just a few things:
 
-- format the input field and enforces 2 decimal places on `blur`
-- default to positive numbers. Set `min=-Infinity` to allow negative values
-- prevent entering non-numeric characters
-- prevent entering the minus sign when `min` >= `0`
+- Prevents entering non-numeric characters
+- Prevents entering the minus sign when `min >= 0`
+- On `blur`, the input field is auto-formatted. Say if you enter `42`, it will be formatted to `42.00`
 
 
 ## Usage:
 ``` html
-input(
-  money
-  min=1
-  max=100
-)
+<input type="text" money min="1" max="100">
 ```
+
+`min` defaults to `0`; set `min=-Infinity` to allow negative values.
