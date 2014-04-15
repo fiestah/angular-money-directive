@@ -8,93 +8,105 @@ angular.module('fiestah.money', [])
   'use strict';
 
   var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
-  function isUndefined(value) {
-    return typeof value == 'undefined';
-  }
-  function isEmpty(value) {
-    return isUndefined(value) || value === '' || value === null || value !== value;
+
+  function link(scope, el, attrs, ngModelCtrl) {
+    var min = parseFloat(attrs.min || 0);
+    var precision = parseFloat(attrs.precision || 2);
+    var lastValidValue;
+
+    function round(num) {
+      var d = Math.pow(10, precision);
+      return Math.round(num * d) / d;
+    }
+
+    function formatPrecision(value) {
+      return parseFloat(value).toFixed(precision);
+    }
+
+    function formatViewValue(value) {
+      return ngModelCtrl.$isEmpty(value) ? '' : '' + value;
+    }
+
+
+    ngModelCtrl.$parsers.push(function (value) {
+      // Handle leading decimal point, like ".5"
+      if (value.indexOf('.') === 0) {
+        value = '0' + value;
+      }
+
+      // Allow "-" inputs only when min < 0
+      if (value.indexOf('-') === 0 && min >= 0) {
+        value = null;
+        ngModelCtrl.$setViewValue('');
+        ngModelCtrl.$render();
+      }
+
+      var empty = ngModelCtrl.$isEmpty(value);
+      if (empty || NUMBER_REGEXP.test(value)) {
+        lastValidValue = (value === '')
+          ? null
+          : (empty ? value : parseFloat(value));
+      } else {
+        // Render the last valid input in the field
+        ngModelCtrl.$setViewValue(formatViewValue(lastValidValue));
+        ngModelCtrl.$render();
+      }
+
+      ngModelCtrl.$setValidity('number', true);
+      return lastValidValue;
+    });
+    ngModelCtrl.$formatters.push(formatViewValue);
+
+    var minValidator = function(value) {
+      if (!ngModelCtrl.$isEmpty(value) && value < min) {
+        ngModelCtrl.$setValidity('min', false);
+        return undefined;
+      } else {
+        ngModelCtrl.$setValidity('min', true);
+        return value;
+      }
+    };
+    ngModelCtrl.$parsers.push(minValidator);
+    ngModelCtrl.$formatters.push(minValidator);
+
+    if (attrs.max) {
+      var max = parseFloat(attrs.max);
+      var maxValidator = function(value) {
+        if (!ngModelCtrl.$isEmpty(value) && value > max) {
+          ngModelCtrl.$setValidity('max', false);
+          return undefined;
+        } else {
+          ngModelCtrl.$setValidity('max', true);
+          return value;
+        }
+      };
+
+      ngModelCtrl.$parsers.push(maxValidator);
+      ngModelCtrl.$formatters.push(maxValidator);
+    }
+
+    // Round off
+    if (precision > -1) {
+      ngModelCtrl.$parsers.push(function (value) {
+        return value ? round(value) : value;
+      });
+      ngModelCtrl.$formatters.push(function (value) {
+        return value ? formatPrecision(value) : value;
+      });
+    }
+
+    el.bind('blur', function () {
+      var value = ngModelCtrl.$modelValue;
+      if (value) {
+        ngModelCtrl.$viewValue = formatPrecision(value);
+        ngModelCtrl.$render();
+      }
+    });
   }
 
   return {
     restrict: 'A',
     require: 'ngModel',
-    link: function (scope, el, attr, ctrl) {
-      function round(num) { 
-        return Math.round(num * 100) / 100;
-      }
-
-      var min = parseFloat(attr.min) || 0;
-
-      // Returning NaN so that the formatter won't render invalid chars
-      ctrl.$parsers.push(function(value) {
-        // Handle leading decimal point, like ".5"
-        if (value === '.') {
-          ctrl.$setValidity('number', true);
-          return 0;
-        }
-
-        // Allow "-" inputs only when min < 0
-        if (value === '-') {
-          ctrl.$setValidity('number', false);
-          return (min < 0) ? -0 : NaN;
-        }
-
-        var empty = isEmpty(value);
-        if (empty || NUMBER_REGEXP.test(value)) {
-          ctrl.$setValidity('number', true);
-          return value === '' ? null : (empty ? value : parseFloat(value));
-        } else {
-          ctrl.$setValidity('number', false);
-          return NaN;
-        }
-      });
-      ctrl.$formatters.push(function(value) {
-        return isEmpty(value) ? '' : '' + value;
-      });
-
-      var minValidator = function(value) {
-        if (!isEmpty(value) && value < min) {
-          ctrl.$setValidity('min', false);
-          return undefined;
-        } else {
-          ctrl.$setValidity('min', true);
-          return value;
-        }
-      };
-      ctrl.$parsers.push(minValidator);
-      ctrl.$formatters.push(minValidator);
-
-      if (attr.max) {
-        var max = parseFloat(attr.max);
-        var maxValidator = function(value) {
-          if (!isEmpty(value) && value > max) {
-            ctrl.$setValidity('max', false);
-            return undefined;
-          } else {
-            ctrl.$setValidity('max', true);
-            return value;
-          }
-        };
-
-        ctrl.$parsers.push(maxValidator);
-        ctrl.$formatters.push(maxValidator);
-      }
-
-      // Round off to 2 decimal places
-      ctrl.$parsers.push(function (value) {
-        return value ? round(value) : value;
-      });
-      ctrl.$formatters.push(function (value) {
-        return value ? parseFloat(value).toFixed(2) : value;
-      });
-
-      el.bind('blur', function () {
-        var value = ctrl.$modelValue;
-        if (value) {
-          ctrl.$viewValue = round(value).toFixed(2);
-          ctrl.$render();
-        }
-      });
-    }
+    link: link
   };
 });
