@@ -2,7 +2,7 @@
 
 [![Build Status](http://img.shields.io/travis/fiestah/angular-money-directive.svg)](http://travis-ci.org/fiestah/angular-money-directive)
 
-This directive validates monetary inputs in "42.53" format (some additional work is needed for "32,00" Europoean formats). Note that this is _not_ designed to work with currency symbols. It largely behaves like Angular's implementation of `type="number"`.
+This directive validates monetary inputs in "42.53" format (some additional work is needed for "32,00" European formats). Note that this is _not_ designed to work with currency symbols. It largely behaves like Angular's implementation of `type="number"`.
 
 It does a few things:
 
