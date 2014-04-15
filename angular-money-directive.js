@@ -35,10 +35,14 @@ angular.module('fiestah.money', [])
       }
 
       // Allow "-" inputs only when min < 0
-      if (value.indexOf('-') === 0 && min >= 0) {
-        value = null;
-        ngModelCtrl.$setViewValue('');
-        ngModelCtrl.$render();
+      if (value.indexOf('-') === 0) {
+        if (min >= 0) {
+          value = null;
+          ngModelCtrl.$setViewValue('');
+          ngModelCtrl.$render();
+        } else if (value === '-') {
+          value = '';
+        }
       }
 
       var empty = ngModelCtrl.$isEmpty(value);

@@ -91,8 +91,16 @@ describe('angular-money-directive', function () {
   });
 
   describe('when min < 0', function () {
+    beforeEach(function () {
+      setupDirective('min="-10"');
+    });
+
+    it('allows the negative sign', function () {
+      setValue('-');
+      expect(scope.model.price).to.not.be.ok;
+      expect(form.price.$valid).to.be.true;
+    });
     it('allows negative values', function () {
-      setupDirective('min="-10"')
       setValue('-5.4');
       expect(scope.model.price).to.equal(-5.4);
       expect(form.price.$valid).to.be.true;
