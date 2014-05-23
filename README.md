@@ -15,6 +15,11 @@ It does a few things:
 
 ## Usage:
 
+```
+$ bower install angular-money-directive
+```
+
+
 ### Attributes:
 - `money`: _required_
 - `ng-model`: _required_
