@@ -39,7 +39,13 @@ describe('angular-money-directive', function () {
 
     it('displays an empty string in the view by default', function () {
       expect(inputEl.val()).to.equal('');
-    })
+    });
+
+    it("displays an empty string when the user deletes entire input", function () {
+      setValue(undefined);
+      expect(scope.model.price).to.equal(null);
+      expect(form.price.$valid).to.be.true;
+    });
 
     it('accepts in-range values', function () {
       setValue('50.4');

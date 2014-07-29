@@ -29,6 +29,9 @@ angular.module('fiestah.money', [])
 
 
     ngModelCtrl.$parsers.push(function (value) {
+      if (value === undefined) {
+        value = '';
+      }
       // Handle leading decimal point, like ".5"
       if (value.indexOf('.') === 0) {
         value = '0' + value;
