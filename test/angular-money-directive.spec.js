@@ -28,9 +28,21 @@ describe('angular-money-directive', function () {
   beforeEach(module('fiestah.money'));
   beforeEach(inject(function (_$compile_, $rootScope) {
     $compile = _$compile_;
-    scope = $rootScope;
+    scope = $rootScope.$new();
     scope.model = {};
   }));
+
+  describe('when ngModel is undefined', function () {
+    beforeEach(function () {
+      setupDirective();
+      setValue(undefined);
+    });
+
+    it('displays an empty string', function () {
+      expect(inputEl.val()).to.equal('');
+      expect(form.price.$valid).to.be.true;
+    });
+  });
 
   describe('when min = 0 (default)', function () {
     beforeEach(function () {
