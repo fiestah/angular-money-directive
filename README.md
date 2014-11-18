@@ -21,6 +21,10 @@ It does a few things:
 $ bower install angular-money-directive
 ```
 
+Then include it as a dependency in your app.
+```
+angular.module('myApp', ['fiestah.money'])
+```
 
 ### Attributes:
 - `money`: _required_
