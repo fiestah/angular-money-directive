@@ -10,15 +10,23 @@ angular.module('fiestah.money', [])
   var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 
   function link(scope, el, attrs, ngModelCtrl) {
-    var min = parseFloat(attrs.min || 0);
-    var precision = parseFloat(attrs.precision || 2);
-    var lastValidValue;
+    var min, max, precision, lastValidValue, preRoundValue;
 
+    /**
+     * Returns a rounded number in the precision setup by the directive
+     * @param  {Number} num Number to be rounded
+     * @return {Number}     Rounded number
+     */
     function round(num) {
       var d = Math.pow(10, precision);
       return Math.round(num * d) / d;
     }
 
+    /**
+     * Returns a string that represents the rounded number
+     * @param  {Number} value Number to be rounded
+     * @return {String}       The string representation
+     */
     function formatPrecision(value) {
       return parseFloat(value).toFixed(precision);
     }
@@ -27,6 +35,25 @@ angular.module('fiestah.money', [])
       return ngModelCtrl.$isEmpty(value) ? '' : '' + value;
     }
 
+    function minValidator(value) {
+      if (!ngModelCtrl.$isEmpty(value) && value < min) {
+        ngModelCtrl.$setValidity('min', false);
+        return undefined;
+      } else {
+        ngModelCtrl.$setValidity('min', true);
+        return value;
+      }
+    }
+
+    function maxValidator(value) {
+      if (!ngModelCtrl.$isEmpty(value) && value > max) {
+        ngModelCtrl.$setValidity('max', false);
+        return undefined;
+      } else {
+        ngModelCtrl.$setValidity('max', true);
+        return value;
+      }
+    }
 
     ngModelCtrl.$parsers.push(function (value) {
       if (angular.isUndefined(value)) {
@@ -61,55 +88,60 @@ angular.module('fiestah.money', [])
       }
 
       ngModelCtrl.$setValidity('number', true);
+
       return lastValidValue;
     });
     ngModelCtrl.$formatters.push(formatViewValue);
 
-    var minValidator = function(value) {
-      if (!ngModelCtrl.$isEmpty(value) && value < min) {
-        ngModelCtrl.$setValidity('min', false);
-        return undefined;
-      } else {
-        ngModelCtrl.$setValidity('min', true);
-        return value;
-      }
-    };
+
+    // Min validation
+    attrs.$observe('min', function (value) {
+      min = parseFloat(value || 0);
+      minValidator(ngModelCtrl.$modelValue);
+    });
+
     ngModelCtrl.$parsers.push(minValidator);
     ngModelCtrl.$formatters.push(minValidator);
 
-    if (attrs.max) {
-      var max = parseFloat(attrs.max);
-      var maxValidator = function(value) {
-        if (!ngModelCtrl.$isEmpty(value) && value > max) {
-          ngModelCtrl.$setValidity('max', false);
-          return undefined;
-        } else {
-          ngModelCtrl.$setValidity('max', true);
-          return value;
-        }
-      };
+
+    // Max validation (optional)
+    if (angular.isDefined(attrs.max)) {
+      attrs.$observe('max', function (val) {
+        max = parseFloat(val);
+        maxValidator(ngModelCtrl.$modelValue);
+      });
 
       ngModelCtrl.$parsers.push(maxValidator);
       ngModelCtrl.$formatters.push(maxValidator);
     }
 
-    // Round off
-    if (precision > -1) {
+
+    // Round off (disabled by "-1")
+    if (attrs.precision !== '-1') {
+      attrs.$observe('precision', function (value) {
+        var parsed = parseFloat(value);
+        precision = !isNaN(parsed) ? parsed : 2;
+
+        // Trigger $parsers and $formatters pipelines
+        ngModelCtrl.$setViewValue(formatPrecision(ngModelCtrl.$modelValue));
+      });
+
       ngModelCtrl.$parsers.push(function (value) {
         return value ? round(value) : value;
       });
       ngModelCtrl.$formatters.push(function (value) {
         return value ? formatPrecision(value) : value;
       });
-    }
 
-    el.bind('blur', function () {
-      var value = ngModelCtrl.$modelValue;
-      if (value) {
-        ngModelCtrl.$viewValue = formatPrecision(value);
-        ngModelCtrl.$render();
-      }
-    });
+      // Auto-format precision on blur
+      el.bind('blur', function () {
+        var value = ngModelCtrl.$modelValue;
+        if (value) {
+          ngModelCtrl.$viewValue = formatPrecision(value);
+          ngModelCtrl.$render();
+        }
+      });
+    }
   }
 
   return {

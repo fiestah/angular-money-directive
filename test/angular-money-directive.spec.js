@@ -143,4 +143,83 @@ describe('angular-money-directive', function () {
     });
   });
 
+  describe('when min="{{min}}"', function () {
+    beforeEach(function () {
+      setupDirective('min="{{min}}"');
+    });
+    it('defaults min to 0', function () {
+      setValue('1');
+      expect(form.price.$valid).to.be.true;
+    });
+    it('reflects changes to min', function () {
+      // Initial min value
+      scope.min = 2;
+      setValue('1');
+      expect(form.price.$invalid).to.be.true;
+
+      // Modified max value
+      scope.min = 0;
+      scope.$digest();
+      expect(form.price.$valid).to.be.true;
+    });
+  });
+
+  describe('when max="{{max}}"', function () {
+    beforeEach(function () {
+      setupDirective('max="{{max}}"');
+    });
+    it('defaults max to Infinity', function () {
+      setValue('1000000000');
+      expect(form.price.$valid).to.be.true;
+    });
+    it('reflects changes to max', function () {
+      // Initial max value
+      scope.max = 1;
+      setValue('2');
+      expect(form.price.$invalid).to.be.true;
+
+      // Modified max value
+      scope.max = 3;
+      scope.$digest();
+      expect(form.price.$valid).to.be.true;
+    });
+  });
+
+  describe('when precision="{{precision}}"', function () {
+    it('defaults precision to 2', function () {
+      setupDirective('precision="{{precision}}"');
+      setValue('2.55555');
+      expect(scope.model.price).to.equal(2.56);
+    });
+    it('reflects changes to precision', function () {
+      // Initial precision
+      scope.precision = 3;
+      setupDirective('precision="{{precision}}"');
+      setValue('2.55555');
+      scope.$digest();
+      expect(scope.model.price).to.equal(2.556);
+
+      // Decrease precision
+      scope.precision = 1;
+      scope.$digest();
+      expect(scope.model.price).to.equal(2.6);
+    });
+
+    // FIXME: How to save the original input without letting subsequent
+    // $setViewValue()'s clobber it?
+    it.skip('does not lose original resolution', function () {
+      // Initial precision
+      scope.precision = 1;
+      setupDirective('precision="{{precision}}"');
+      setValue('2.55555');
+      scope.$digest();
+      expect(scope.model.price).to.equal(2.6);
+
+      // Increase precision
+      scope.precision = 3;
+      scope.$digest();
+      expect(scope.model.price).to.equal(2.556);
+    });
+  });
+
 });
