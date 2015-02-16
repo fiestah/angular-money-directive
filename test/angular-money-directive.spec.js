@@ -94,13 +94,26 @@ describe('angular-money-directive', function () {
       expect(inputEl.val()).to.equal('50.4');
       expect(form.price.$valid).to.be.true;
     });
-
-    it('formats decimals on blur', function () {
-      setValue('50');
-      inputEl.triggerHandler('blur');
-      expect(inputEl.val()).to.equal('50.00');
-    });
   });
+
+  describe('on blur', function () {
+    beforeEach(function () {
+      setupDirective();
+      setValue('12.345');
+      inputEl.triggerHandler('blur');
+    })
+
+    it('formats decimals', function () {
+      expect(inputEl.val()).to.equal('12.35');
+    });
+
+    describe('on invalid input', function () {
+      it('reverts to the last rounded number', function () {
+        setValue('12.345x');
+        expect(inputEl.val()).to.equal('12.35');
+      });
+    });
+  })
 
   describe('when min < 0', function () {
     beforeEach(function () {

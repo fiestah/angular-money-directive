@@ -127,7 +127,14 @@ angular.module('fiestah.money', [])
       });
 
       ngModelCtrl.$parsers.push(function (value) {
-        return value ? round(value) : value;
+        if (value) {
+          // Save with rounded value
+          lastValidValue = round(value);
+
+          return lastValidValue;
+        } else {
+          return undefined;
+        }
       });
       ngModelCtrl.$formatters.push(function (value) {
         return value ? formatPrecision(value) : value;
