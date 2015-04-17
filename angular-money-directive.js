@@ -56,6 +56,10 @@ angular.module('fiestah.money', [])
     }
 
     ngModelCtrl.$parsers.push(function (value) {
+
+      if(!lastValidValue)
+        lastValidValue = value;
+
       if (angular.isUndefined(value)) {
         value = '';
       }
