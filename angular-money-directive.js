@@ -8,6 +8,7 @@ angular.module('fiestah.money', [])
   'use strict';
 
   var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+  var DEFAULT_PRECISION = 2;
 
   function link(scope, el, attrs, ngModelCtrl) {
     var min, max, precision, lastValidValue, preRoundValue;
@@ -115,12 +116,13 @@ angular.module('fiestah.money', [])
       ngModelCtrl.$formatters.push(maxValidator);
     }
 
-
+    precision = DEFAULT_PRECISION;
+    
     // Round off (disabled by "-1")
     if (attrs.precision !== '-1') {
       attrs.$observe('precision', function (value) {
         var parsed = parseFloat(value);
-        precision = !isNaN(parsed) ? parsed : 2;
+        precision = !isNaN(parsed) ? parsed : DEFAULT_PRECISION;
 
         // Trigger $parsers and $formatters pipelines
         ngModelCtrl.$setViewValue(formatPrecision(ngModelCtrl.$modelValue));
