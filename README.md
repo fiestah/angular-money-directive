@@ -30,7 +30,8 @@ angular.module('myApp', ['fiestah.money'])
 
 - `money`: _required_
 - `ng-model`: _required_
-- `type`: Set to `text` or just leave it out. Do _not_ set to `number`.
+- `step`: _required_ Only for `number` type.
+- `type`: Set to `text` or `number` or just leave it out.
 - `min`: _optional_ Defaults to `0`.
 - `max`: _optional_ Not enforced by default
 - `precision`: _optional_ Defaults to `2`. Set to `-1` to disable rounding
