@@ -60,21 +60,24 @@ angular.module('fiestah.money', [])
         value = '';
       }
 
-      // Handle leading decimal point, like ".5"
-      if (value.indexOf('.') === 0) {
-        value = '0' + value;
-      }
-
-      // Allow "-" inputs only when min < 0
-      if (value.indexOf('-') === 0) {
-        if (min >= 0) {
-          value = null;
-          ngModelCtrl.$setViewValue('');
-          ngModelCtrl.$render();
-        } else if (value === '-') {
-          value = '';
+      // Validate input for only text type
+      if (attrs.type === "text") {
+        // Handle leading decimal point, like ".5"
+        if (value.indexOf('.') === 0) {
+          value = '0' + value;
         }
-      }
+
+        // Allow "-" inputs only when min < 0
+        if (value.indexOf('-') === 0) {
+          if (min >= 0) {
+            value = null;
+            ngModelCtrl.$setViewValue('');
+            ngModelCtrl.$render();
+          } else if (value === '-') {
+            value = '';
+          }
+        }        
+      };
 
       var empty = ngModelCtrl.$isEmpty(value);
       if (empty || NUMBER_REGEXP.test(value)) {
