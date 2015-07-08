@@ -124,6 +124,7 @@ angular.module('fiestah.money', [])
 
         // Trigger $parsers and $formatters pipelines
         ngModelCtrl.$setViewValue(formatPrecision(ngModelCtrl.$modelValue));
+        ngModelCtrl.$render();
       });
 
       ngModelCtrl.$parsers.push(function (value) {
