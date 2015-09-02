@@ -69,7 +69,7 @@ angular.module('fiestah.money', [])
       if (value.indexOf('-') === 0) {
         if (min >= 0) {
           value = null;
-          ngModelCtrl.$setViewValue('');
+          ngModelCtrl.$viewValue = '';
           ngModelCtrl.$render();
         } else if (value === '-') {
           value = '';
@@ -78,12 +78,10 @@ angular.module('fiestah.money', [])
 
       var empty = ngModelCtrl.$isEmpty(value);
       if (empty || NUMBER_REGEXP.test(value)) {
-        lastValidValue = (value === '')
-          ? null
-          : (empty ? value : parseFloat(value));
+        lastValidValue = (value === '') ? null : (empty ? value : parseFloat(value));
       } else {
         // Render the last valid input in the field
-        ngModelCtrl.$setViewValue(formatViewValue(lastValidValue));
+        ngModelCtrl.$viewValue = formatViewValue(lastValidValue);
         ngModelCtrl.$render();
       }
 
@@ -123,7 +121,7 @@ angular.module('fiestah.money', [])
         precision = !isNaN(parsed) ? parsed : 2;
 
         // Trigger $parsers and $formatters pipelines
-        ngModelCtrl.$setViewValue(formatPrecision(ngModelCtrl.$modelValue));
+        ngModelCtrl.$viewValue = formatPrecision(ngModelCtrl.$modelValue);
         ngModelCtrl.$render();
       });
 
