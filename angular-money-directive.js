@@ -28,7 +28,11 @@ angular.module('fiestah.money', [])
      * @return {String}       The string representation
      */
     function formatPrecision(value) {
-      return parseFloat(value).toFixed(precision);
+      var v = parseFloat(value).toFixed(precision);
+      if (isNaN(v)) {
+        return '';
+      }
+      return v;
     }
 
     function formatViewValue(value) {
