@@ -3,8 +3,8 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha', 'chai'],
     files: [
-      'bower_components/angular/angular.min.js',
-      'bower_components/angular-mocks/angular-mocks.js',
+      'node_modules/angular/angular.js',
+      'node_modules/angular-mocks/angular-mocks.js',
       'angular-money-directive.js',
       'test/angular-money-directive.spec.js'
     ],

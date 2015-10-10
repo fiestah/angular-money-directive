@@ -49,5 +49,5 @@ Basic example:
 
 ## Tests:
 
-1. Install test deps: `npm install` and `bower install`
+1. Install test deps: `npm install`
 1. Run: `./node_modules/karma/bin/karma start`
