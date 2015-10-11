@@ -1,16 +1,19 @@
+(function () {
+'use strict';
+
 /**
  * Heavily adapted from the `type="number"` directive in Angular's
  * /src/ng/directive/input.js
  */
 
+var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var DEFAULT_PRECISION = 2;
+
 angular.module('fiestah.money', [])
-.directive('money', function () {
-  'use strict';
 
-  var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
-
+.directive('money', function ($parse) {
   function link(scope, el, attrs, ngModelCtrl) {
-    var min, max, precision, lastValidValue, preRoundValue;
+    var min, max, precision, lastValidValue;
 
     /**
      * Returns a rounded number in the precision setup by the directive
@@ -31,8 +34,21 @@ angular.module('fiestah.money', [])
       return parseFloat(value).toFixed(precision);
     }
 
-    function formatViewValue(value) {
-      return ngModelCtrl.$isEmpty(value) ? '' : '' + value;
+    function isPrecisionValid() {
+      return !isNaN(precision) && precision > -1;
+    }
+
+    function updateValuePrecision() {
+      // $modelValue shows up as NaN in 1.2 on init
+      var modelValue = ngModelCtrl.$modelValue;
+
+      if (!isNaN(modelValue) && isPrecisionValid()) {
+        ngModelCtrl.$modelValue = round(modelValue);
+        $parse(attrs.ngModel).assign(scope, ngModelCtrl.$modelValue);
+
+        ngModelCtrl.$viewValue = formatPrecision(modelValue);
+        ngModelCtrl.$render();
+      }
     }
 
     function minValidator(value) {
@@ -55,6 +71,7 @@ angular.module('fiestah.money', [])
       }
     }
 
+
     ngModelCtrl.$parsers.push(function (value) {
       if (angular.isUndefined(value)) {
         value = '';
@@ -69,7 +86,7 @@ angular.module('fiestah.money', [])
       if (value.indexOf('-') === 0) {
         if (min >= 0) {
           value = null;
-          ngModelCtrl.$setViewValue('');
+          ngModelCtrl.$viewValue = '';
           ngModelCtrl.$render();
         } else if (value === '-') {
           value = '';
@@ -83,7 +100,7 @@ angular.module('fiestah.money', [])
           : (empty ? value : parseFloat(value));
       } else {
         // Render the last valid input in the field
-        ngModelCtrl.$setViewValue(formatViewValue(lastValidValue));
+        ngModelCtrl.$viewValue = lastValidValue;
         ngModelCtrl.$render();
       }
 
@@ -91,7 +108,6 @@ angular.module('fiestah.money', [])
 
       return lastValidValue;
     });
-    ngModelCtrl.$formatters.push(formatViewValue);
 
 
     // Min validation
@@ -117,38 +133,36 @@ angular.module('fiestah.money', [])
 
 
     // Round off (disabled by "-1")
-    if (attrs.precision !== '-1') {
+    if (angular.isDefined(attrs.precision)) {
       attrs.$observe('precision', function (value) {
-        var parsed = parseFloat(value);
-        precision = !isNaN(parsed) ? parsed : 2;
+        precision = parseInt(value, 10);
 
-        // Trigger $parsers and $formatters pipelines
-        ngModelCtrl.$setViewValue(formatPrecision(ngModelCtrl.$modelValue));
+        updateValuePrecision();
       });
-
-      ngModelCtrl.$parsers.push(function (value) {
-        if (value) {
-          // Save with rounded value
-          lastValidValue = round(value);
-
-          return lastValidValue;
-        } else {
-          return undefined;
-        }
-      });
-      ngModelCtrl.$formatters.push(function (value) {
-        return value ? formatPrecision(value) : value;
-      });
-
-      // Auto-format precision on blur
-      el.bind('blur', function () {
-        var value = ngModelCtrl.$modelValue;
-        if (value) {
-          ngModelCtrl.$viewValue = formatPrecision(value);
-          ngModelCtrl.$render();
-        }
-      });
+    } else {
+      precision = DEFAULT_PRECISION;
     }
+
+    ngModelCtrl.$parsers.push(function (value) {
+      if (value) {
+        // Save with rounded value
+        lastValidValue = isPrecisionValid() ? round(value) : value;
+        return lastValidValue;
+      } else {
+        return undefined;
+      }
+    });
+
+    ngModelCtrl.$formatters.push(function (value) {
+      if (value) {
+        return isPrecisionValid() ? formatPrecision(value) : value;
+      } else {
+        return '';
+      }
+    });
+
+    // Auto-format precision on blur
+    el.bind('blur', updateValuePrecision);
   }
 
   return {
@@ -157,3 +171,5 @@ angular.module('fiestah.money', [])
     link: link
   };
 });
+
+})();

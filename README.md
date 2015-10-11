@@ -33,7 +33,7 @@ angular.module('myApp', ['fiestah.money'])
 - `type`: Set to `text` or just leave it out. Do _not_ set to `number`.
 - `min`: _optional_ Defaults to `0`.
 - `max`: _optional_ Not enforced by default
-- `precision`: _optional_ Defaults to `2`. Set to `-1` to disable rounding
+- `precision`: _optional_ Defaults to `2`. Set to `-1` to disable rounding. Rounding is also disabled if `parseInt(precision, 10)` does not return `0` or higher.
 
 Basic example:
 
@@ -44,7 +44,7 @@ Basic example:
 `min`, `max` and `precision` can be set dynamically in $scope:
 
 ``` html
-<input type="text" ng-model="model.price" money min="{{min}}">
+<input type="text" ng-model="model.price" money min="{{min}}" max="{{max}}" precision="{{precision}}">
 ```
 
 ## Tests:
