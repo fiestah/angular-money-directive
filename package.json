@@ -7,6 +7,8 @@
     "angular": "~1.2.29",
     "angular-mocks": "~1.2.29",
     "chai": "~1.9.1",
+    "chai-jquery": "^2.0.0",
+    "jquery": "^2.1.4",
     "karma": "~0.12.6",
     "karma-chai": "~0.1.0",
     "karma-mocha": "~0.1.3",
