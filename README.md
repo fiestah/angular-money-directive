@@ -14,6 +14,8 @@ It does a few things:
 - Rounds the model value by `precision`, e.g. `42.219` will be rounded to `42.22` by default
 - On `blur`, the input field is auto-formatted. Say if you enter `42`, it will be formatted to `42.00`
 
+Version 1.2.x supports Angular 1.3 and up. Version 1.1.x will continue to work for Angular 1.2.
+
 
 ## Usage:
 

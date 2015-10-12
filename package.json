@@ -4,8 +4,8 @@
   "description": "AngularJS directive to validate money inputs",
   "dependencies": {},
   "devDependencies": {
-    "angular": "~1.2.29",
-    "angular-mocks": "~1.2.29",
+    "angular": "^1.4.7",
+    "angular-mocks": "^1.4.7",
     "chai": "~1.9.1",
     "chai-jquery": "^2.0.0",
     "jquery": "^2.1.4",

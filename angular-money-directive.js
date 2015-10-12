@@ -13,7 +13,10 @@ angular.module('fiestah.money', [])
 
 .directive('money', function ($parse) {
   function link(scope, el, attrs, ngModelCtrl) {
-    var min, max, precision, lastValidValue;
+    var minVal, maxVal, precision, lastValidValue;
+    var isDefined = angular.isDefined;
+    var isUndefined = angular.isUndefined;
+    var isNumber = angular.isNumber;
 
     /**
      * Returns a rounded number in the precision setup by the directive
@@ -51,29 +54,9 @@ angular.module('fiestah.money', [])
       }
     }
 
-    function minValidator(value) {
-      if (!ngModelCtrl.$isEmpty(value) && value < min) {
-        ngModelCtrl.$setValidity('min', false);
-        return undefined;
-      } else {
-        ngModelCtrl.$setValidity('min', true);
-        return value;
-      }
-    }
-
-    function maxValidator(value) {
-      if (!ngModelCtrl.$isEmpty(value) && value > max) {
-        ngModelCtrl.$setValidity('max', false);
-        return undefined;
-      } else {
-        ngModelCtrl.$setValidity('max', true);
-        return value;
-      }
-    }
-
 
     ngModelCtrl.$parsers.push(function (value) {
-      if (angular.isUndefined(value)) {
+      if (isUndefined(value)) {
         value = '';
       }
 
@@ -84,7 +67,7 @@ angular.module('fiestah.money', [])
 
       // Allow "-" inputs only when min < 0
       if (value.indexOf('-') === 0) {
-        if (min >= 0) {
+        if (minVal >= 0) {
           value = null;
           ngModelCtrl.$viewValue = '';
           ngModelCtrl.$render();
@@ -111,29 +94,39 @@ angular.module('fiestah.money', [])
 
 
     // Min validation
-    attrs.$observe('min', function (value) {
-      min = parseFloat(value || 0);
-      minValidator(ngModelCtrl.$modelValue);
-    });
-
-    ngModelCtrl.$parsers.push(minValidator);
-    ngModelCtrl.$formatters.push(minValidator);
-
-
-    // Max validation (optional)
-    if (angular.isDefined(attrs.max)) {
-      attrs.$observe('max', function (val) {
-        max = parseFloat(val);
-        maxValidator(ngModelCtrl.$modelValue);
+    ngModelCtrl.$validators.min = function (value) {
+      return ngModelCtrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
+    };
+    if (isDefined(attrs.min) || attrs.ngMin) {
+      attrs.$observe('min', function(val) {
+        if (isDefined(val) && !isNumber(val)) {
+          val = parseFloat(val, 10);
+        }
+        minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+        ngModelCtrl.$validate();
       });
-
-      ngModelCtrl.$parsers.push(maxValidator);
-      ngModelCtrl.$formatters.push(maxValidator);
+    } else {
+      minVal = 0;
     }
 
 
+    // Max validation
+    if (isDefined(attrs.max) || attrs.ngMax) {
+      ngModelCtrl.$validators.max = function(value) {
+        return ngModelCtrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
+      };
+
+      attrs.$observe('max', function(val) {
+        if (isDefined(val) && !isNumber(val)) {
+          val = parseFloat(val, 10);
+        }
+        maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+        ngModelCtrl.$validate();
+      });
+    }
+
     // Round off (disabled by "-1")
-    if (angular.isDefined(attrs.precision)) {
+    if (isDefined(attrs.precision)) {
       attrs.$observe('precision', function (value) {
         precision = parseInt(value, 10);
 
@@ -149,7 +142,7 @@ angular.module('fiestah.money', [])
         lastValidValue = isPrecisionValid() ? round(value) : value;
         return lastValidValue;
       } else {
-        return undefined;
+        return value;
       }
     });
 
