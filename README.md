@@ -18,8 +18,15 @@ It does a few things:
 ## Usage:
 
 ```
-$ bower install angular-money-directive
+npm install angular-money-directive
 ```
+
+or
+
+```
+bower install angular-money-directive
+```
+
 
 Then include it as a dependency in your app.
 ```
