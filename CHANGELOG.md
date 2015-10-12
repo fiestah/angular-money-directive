@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 (Oct 11 2015)
+
+Support for Angular 1.3 and up.
+
 ## 1.1.1 (Oct 11 2015)
 
 Fixed the shitshow in 1.1.0. I'm sorry about that :(
