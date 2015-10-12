@@ -3,36 +3,86 @@
 <head>
   <meta charset="utf-8">
   <title>Angular Money Directive Demo</title>
-  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
-  <script src="//cdn.rawgit.com/fiestah/angular-money-directive/735cc94867a62a151f0f77c5aa01d54197eb91fa/angular-money-directive.js"></script>
+  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <style>
+    section { margin: 50px 0; }
+    .attributes label { display: inline-block; width: 5em;}
+    .attributes .form-control  { display: inline-block; width: 5em; }
+  </style>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  <script src="//rawgit.com/fiestah/angular-money-directive/1.2.0/dist/angular-money-directive.js"></script>
   <script>
-    angular.module('demo', ['fiestah.money']);
+    angular.module('demo', ['fiestah.money'])
+    .controller('BasicFormController', function ($scope, $timeout) {
+      $scope.amount = 42.50;
+    })
+    .controller('AdvancedFormController', function ($scope, $timeout) {
+      $scope.amount = 20;
+
+      $scope.min = 0;
+      $scope.max = 100;
+      $scope.precision = 2;
+    });
   </script>
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-xs-12 col-sm-6">
-        <h1>Angular Money Directive Demo</h1>
-        <form>
-          <div class="form-group">
-            <label for="amount">Enter a monetary amount:</label>
+  <div class="container">
+    <header>
+      <h1 class="page-header h2">Angular Money Directive Demo</h1>
+    </header>
+
+    <section>
+      <h2 class="h4">Basic usage with no optional attributes:</h2>
+      <pre>&lt;input ng-model="amount" money&gt;</pre>
+      <form ng-controller="BasicFormController" name="basicForm">
+        <div class="form-group" ng-class="{'has-error': basicForm.amount.$invalid }">
+          <label class="control-label">Enter a monetary amount:</label>
+          <div class="form-inline">
             <div class="input-group">
               <span class="input-group-addon">$</span>
-              <input id="amount" class="form-control" money ng-model="amount" autofocus>
+              <input class="form-control"  name="amount" ng-model="amount" money precision="{{precision}}">
             </div>
-          </div>
-
-          <div class="form-group">
-            <label>Model Value:</label>
             <div class="form-control-static">
-              <pre>{{amount}}</pre>
+              <code>ngModel: {{amount}}</code>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </section>
+
+    <section>
+      <h2 class="h4">Advanced usage with optional attributes:</h2>
+      <pre ng-non-bindable>&lt;input ng-model="amount" money min="{{min}}" max="{{max}}" precision="{{precision}}"&gt;</pre>
+      <form  ng-controller="AdvancedFormController" name="advancedForm">
+        <div class="form-group" ng-class="{'has-error': advancedForm.amount.$invalid }">
+          <label class="control-label">Enter a monetary amount:</label>
+          <div class="form-inline">
+            <div class="input-group">
+              <span class="input-group-addon">$</span>
+              <input name="amount" class="form-control" ng-model="amount" money min="{{min}}" max="{{max}}" precision='{{precision}}'>
+            </div>
+            <div class="form-control-static">
+              <code>ngModel: {{amount}}</code>
+            </div>
+          </div>
+        </div>
+        <div class="attributes">
+          <div class="form-group">
+            <label>Min</label>
+            <input type="number" class="form-control" ng-model="min">
+          </div>
+          <div class="form-group">
+            <label>Max</label>
+            <input type="number" class="form-control" ng-model="max">
+          </div>
+          <div class="form-group">
+            <label>Precision</label>
+            <input type="number" class="form-control"  ng-model="precision">
+          </div>
+        </div>
+      </form>
+    </section>
+
   </div>
 </body>
 </html>
