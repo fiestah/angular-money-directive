@@ -20,8 +20,15 @@ Version 1.2.x supports Angular 1.3 and up. Version 1.1.x will continue to work f
 ## Usage:
 
 ```
-$ bower install angular-money-directive
+npm install angular-money-directive
 ```
+
+or
+
+```
+bower install angular-money-directive
+```
+
 
 Then include it as a dependency in your app.
 ```
