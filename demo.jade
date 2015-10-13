@@ -1,0 +1,71 @@
+doctype html
+html(ng-app='demo')
+  head
+    meta(charset='utf-8')
+    title Angular Money Directive Demo
+    link(rel='stylesheet', type='text/css', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
+    style.
+      .versions .version { margin-left: 10px; }
+      .versions .selected { font-weight: bold; }
+      section { margin: 50px 0; }
+      .attributes label { display: inline-block; width: 5em;}
+      .attributes .form-control  { display: inline-block; width: 5em; }
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/' + currentPage.angular + '/angular.min.js')
+    script(src='//rawgit.com/fiestah/angular-money-directive/' + currentPage.release + '/dist/angular-money-directive.js')
+    script.
+      angular.module('demo', ['fiestah.money'])
+      .controller('BasicFormController', function ($scope, $timeout) {
+        $scope.amount = 42.50;
+      })
+      .controller('AdvancedFormController', function ($scope, $timeout) {
+        $scope.amount = 20;
+        $scope.min = 0;
+        $scope.max = 100;
+        $scope.precision = 2;
+      });
+  body
+    .container
+      header
+        h1.page-header.h2 Angular Money Directive Demo
+        .versions
+          span Angular versions:
+          for page in pages
+            if (page.angular === currentPage.angular)
+              span.selected.version= page.angular
+            else
+              a.version(href=page.filename)= page.angular
+
+      section
+        h2.h4 Basic usage with no optional attributes:
+        pre= '<input ng-model="amount" money>'
+        form(ng-controller='BasicFormController' name='basicForm')
+          .form-group(ng-class="{'has-error': basicForm.amount.$invalid }")
+            label.control-label Enter a monetary amount:
+            .form-inline
+              .input-group
+                span.input-group-addon $
+                input.form-control(name='amount' ng-model='amount' money='' precision='{{precision}}')
+              .form-control-static
+                code ngModel: {{amount}}
+      section
+        h2.h4 Advanced usage with optional attributes:
+        pre(ng-non-bindable)= '<input ng-model="amount" money min="{{min}}" max="{{max}}" precision="{{precision}}"'
+        form(ng-controller='AdvancedFormController' name='advancedForm')
+          .form-group(ng-class="{'has-error': advancedForm.amount.$invalid }")
+            label.control-label Enter a monetary amount:
+            .form-inline
+              .input-group
+                span.input-group-addon $
+                input.form-control(name='amount' ng-model='amount' money='' min='{{min}}' max='{{max}}' precision='{{precision}}')
+              .form-control-static
+                code ngModel: {{amount}}
+          .attributes
+            .form-group
+              label Min
+              input.form-control(type='number' ng-model='min')
+            .form-group
+              label Max
+              input.form-control(type='number' ng-model='max')
+            .form-group
+              label Precision
+              input.form-control(type='number' ng-model='precision')
