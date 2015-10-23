@@ -68,6 +68,25 @@ describe('angular-money-directive', function () {
     });
   });
 
+  describe('when ngModel is set to null', function () {
+    beforeEach(function () {
+      scope.model.price = null;
+      setupDirective();
+    });
+    it('displays the an empty string', function () {
+      expect(inputEl.val()).to.equal('');
+      expect(form.price.$valid).to.be.true;
+    });
+    describe('on blur', function () {
+      beforeEach(function () {
+        inputEl.triggerHandler('blur');
+      });
+      it('displays an empty string', function () {
+        expect(inputEl.val()).to.equal('');
+      });
+    });
+  });
+
 
   describe('defaults with no optional attributes set', function () {
     beforeEach(function () {
@@ -148,6 +167,19 @@ describe('angular-money-directive', function () {
       it('allows negative values', function () {
         setValue('-5.4');
         expect(scope.model.price).to.equal(-5.4);
+        expect(form.price.$valid).to.be.true;
+      });
+      it('allows negative fraction values', function () {
+        setValue('-');
+        expect(scope.model.price).to.equal(null);
+        expect(form.price.$valid).to.be.true;
+
+        setValue('-.');
+        expect(scope.model.price).to.equal(null);
+        expect(form.price.$valid).to.be.true;
+
+        setValue('-.5');
+        expect(scope.model.price).to.equal(-0.5);
         expect(form.price.$valid).to.be.true;
       });
     });
@@ -245,6 +277,18 @@ describe('angular-money-directive', function () {
           setValue('2.555');
           expect(scope.model.price).to.equal(2.555);
         });
+      });
+
+      describe('when entering an invalid char beyond the precision', function () {
+        beforeEach(function () {
+          scope.precision = 2;
+          scope.$digest();
+          setValue('2.5555');
+          setValue('2.5555d');
+        });
+        it('should revert to the value right before entering the invalid char', function () {
+          expect(inputEl.val()).to.equal('2.5555');
+        })
       });
 
       it('reflects changes to precision', function () {
