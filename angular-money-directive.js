@@ -41,6 +41,10 @@ angular.module('fiestah.money', [])
       return !isNaN(precision) && precision > -1;
     }
 
+    function isValueValid(value) {
+      return angular.isNumber(value) && !isNaN(value);
+    }
+
     function updateValuePrecision() {
       // $modelValue shows up as NaN in 1.2 on init
       var modelValue = ngModelCtrl.$modelValue;
@@ -148,7 +152,8 @@ angular.module('fiestah.money', [])
 
     ngModelCtrl.$formatters.push(function (value) {
       if (value) {
-        return isPrecisionValid() ? formatPrecision(value) : value;
+        return isPrecisionValid() && isValueValid(value) ?
+          formatPrecision(value) : value;
       } else {
         return '';
       }

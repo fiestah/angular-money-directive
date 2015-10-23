@@ -44,15 +44,27 @@ describe('angular-money-directive', function () {
     });
   });
 
-  describe('when ngModel is set', function () {
+  describe('when ngModel is set to a valid value', function () {
     beforeEach(function () {
       scope.model.price = 0.01;
       setupDirective();
     });
 
-    it('displays the value', function () {
+    it('displays the formatted value', function () {
       expect(inputEl.val()).to.equal('0.01');
       expect(form.price.$valid).to.be.true;
+    });
+  });
+
+  describe('when ngModel is set to an invalid value', function () {
+    beforeEach(function () {
+      scope.model.price = 'abc';
+      setupDirective();
+    });
+
+    it('displays the formatted value', function () {
+      expect(inputEl.val()).to.equal('abc');
+      expect(form.price.$valid).to.be.false;
     });
   });
 
