@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 (Oct 23 2015)
+
+Fix #17 (again) and #28
+
 ## 1.2.0 (Oct 11 2015)
 
 Support for Angular 1.3 and up.
