@@ -1,8 +1,12 @@
 # Changelog
 
+## 1.2.2 (Oct 23 2015)
+
+Build dist.
+
 ## 1.2.1 (Oct 23 2015)
 
-Fix #17 (again) and #28
+Fix #17 (again) and #28 (bad release — forgot to build dist)
 
 ## 1.2.0 (Oct 11 2015)
 
