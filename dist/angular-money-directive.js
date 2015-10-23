@@ -13,7 +13,7 @@ angular.module('fiestah.money', [])
 
 .directive('money', ["$parse", function ($parse) {
   function link(scope, el, attrs, ngModelCtrl) {
-    var minVal, maxVal, precision, lastValidValue;
+    var minVal, maxVal, precision, lastValidViewValue;
     var isDefined = angular.isDefined;
     var isUndefined = angular.isUndefined;
     var isNumber = angular.isNumber;
@@ -41,23 +41,34 @@ angular.module('fiestah.money', [])
       return !isNaN(precision) && precision > -1;
     }
 
+    function isValueValid(value) {
+      return angular.isNumber(value) && !isNaN(value);
+    }
+
     function updateValuePrecision() {
-      // $modelValue shows up as NaN in 1.2 on init
       var modelValue = ngModelCtrl.$modelValue;
 
-      if (!isNaN(modelValue) && isPrecisionValid()) {
+      if (isValueValid(modelValue) && isPrecisionValid()) {
         ngModelCtrl.$modelValue = round(modelValue);
         $parse(attrs.ngModel).assign(scope, ngModelCtrl.$modelValue);
+        changeViewValue(formatPrecision(modelValue));
 
-        ngModelCtrl.$viewValue = formatPrecision(modelValue);
-        ngModelCtrl.$render();
+        // Save the rounded view value
+        lastValidViewValue = ngModelCtrl.$viewValue;
       }
+    }
+
+    function changeViewValue(value) {
+      ngModelCtrl.$viewValue = value;
+      ngModelCtrl.$commitViewValue();
+      ngModelCtrl.$render();
     }
 
 
     ngModelCtrl.$parsers.push(function (value) {
-      if (isUndefined(value)) {
-        value = '';
+      if (ngModelCtrl.$isEmpty(value)) {
+        lastValidViewValue = value;
+        return null;
       }
 
       // Handle leading decimal point, like ".5"
@@ -68,28 +79,22 @@ angular.module('fiestah.money', [])
       // Allow "-" inputs only when min < 0
       if (value.indexOf('-') === 0) {
         if (minVal >= 0) {
-          value = null;
-          ngModelCtrl.$viewValue = '';
-          ngModelCtrl.$render();
-        } else if (value === '-') {
-          value = '';
+          changeViewValue('');
+          return null;
+        } else if (value === '-' || value === '-.') {
+          return null;
         }
       }
 
-      var empty = ngModelCtrl.$isEmpty(value);
-      if (empty || NUMBER_REGEXP.test(value)) {
-        lastValidValue = (value === '')
-          ? null
-          : (empty ? value : parseFloat(value));
+      if (NUMBER_REGEXP.test(value)) {
+        // Save as valid view value if it's a number
+        lastValidViewValue = value;
+        return parseFloat(value);
       } else {
         // Render the last valid input in the field
-        ngModelCtrl.$viewValue = lastValidValue;
-        ngModelCtrl.$render();
+        changeViewValue(lastValidViewValue);
+        return lastValidViewValue;
       }
-
-      ngModelCtrl.$setValidity('number', true);
-
-      return lastValidValue;
     });
 
 
@@ -138,17 +143,16 @@ angular.module('fiestah.money', [])
 
     ngModelCtrl.$parsers.push(function (value) {
       if (value) {
-        // Save with rounded value
-        lastValidValue = isPrecisionValid() ? round(value) : value;
-        return lastValidValue;
-      } else {
-        return value;
+        // Round off value to specified precision
+        value = isPrecisionValid() ? round(value) : value;
       }
+      return value;
     });
 
     ngModelCtrl.$formatters.push(function (value) {
       if (value) {
-        return isPrecisionValid() ? formatPrecision(value) : value;
+        return isPrecisionValid() && isValueValid(value) ?
+          formatPrecision(value) : value;
       } else {
         return '';
       }
