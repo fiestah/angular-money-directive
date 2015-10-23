@@ -1,7 +1,7 @@
 var jade = require('jade')
 var fs = require('fs')
 
-const LATEST = '1.2.0'
+const LATEST = 'v1.2.2'
 const SRC_FILE = 'demo.jade'
 
 var jadeFn = jade.compileFile(SRC_FILE)
