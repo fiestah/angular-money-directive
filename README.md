@@ -50,7 +50,7 @@ Basic example:
 <input type="text" ng-model="model.price" money>
 ```
 
-`min`, `max` and `precision` can be set dynamically in $scope:
+`min`, `max` and `precision` can be set dynamically:
 
 ``` html
 <input type="text" ng-model="model.price" money min="{{min}}" max="{{max}}" precision="{{precision}}">
