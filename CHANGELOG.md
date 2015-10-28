@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3 (Oct 27 2015)
+
+Point "main" to dist for bower.
+
 ## 1.2.2 (Oct 23 2015)
 
 Build dist.
