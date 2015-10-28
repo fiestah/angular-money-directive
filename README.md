@@ -30,10 +30,18 @@ bower install angular-money-directive
 ```
 
 
+Load the unminified or minified file from `dist` dir:
+
+```
+<script src="dist/angular-money-directive.js"></script>
+```
+
 Then include it as a dependency in your app.
+
 ```
 angular.module('myApp', ['fiestah.money'])
 ```
+
 
 ### Attributes:
 
