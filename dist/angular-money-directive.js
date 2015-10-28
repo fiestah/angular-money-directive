@@ -159,7 +159,10 @@ angular.module('fiestah.money', [])
     });
 
     // Auto-format precision on blur
-    el.bind('blur', updateValuePrecision);
+    el.bind('blur', function () {
+      ngModelCtrl.$commitViewValue();
+      updateValuePrecision();
+    });
   }
 
   return {
