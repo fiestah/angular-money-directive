@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4 (Oct 27 2015)
+
+Fix changes not getting committed on blur when ng-model-options="{updateOn: 'blur'}".
+
 ## 1.2.3 (Oct 27 2015)
 
 Point "main" to dist for bower.
