@@ -1,7 +1,6 @@
 {
   "name": "angular-money-directive",
-  "version": "1.2.0",
-  "main": "angular-money-directive.js",
+  "main": "dist/angular-money-directive.js",
   "ignore": [
     "**/.*",
     "node_modules",
