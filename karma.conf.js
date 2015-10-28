@@ -7,7 +7,7 @@ module.exports = function (config) {
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/jquery/dist/jquery.js',
       'node_modules/chai-jquery/chai-jquery.js',
-      'angular-money-directive.js',
+      'src/angular-money-directive.js',
       'test/angular-money-directive.spec.js'
     ],
     reporters: ['progress'],

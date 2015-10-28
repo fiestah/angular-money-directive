@@ -6,11 +6,11 @@ var rename = require('gulp-rename');
 var del = require('del');
 var path = require('path');
 
-var NAME = 'angular-money-directive';
+var SRC = 'src/angular-money-directive.js';
 var DEST = 'dist/';
 
 gulp.task('dist', function () {
-  return gulp.src(NAME + '.js')
+  return gulp.src(SRC)
     .pipe(ngAnnotate())
 
     // dist/angular-money-directive.js
