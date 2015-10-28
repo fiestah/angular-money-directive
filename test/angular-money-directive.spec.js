@@ -154,6 +154,27 @@ describe('angular-money-directive', function () {
     });
   });
 
+  describe('when ng-model-options="{updateOn: \'blur\'}"', function () {
+    beforeEach(function () {
+      scope.model.price = 20;
+      setupDirective('ng-model-options="{updateOn: \'blur\'}"');
+      inputEl.triggerHandler('blur');
+    });
+    it('formats decimals', function () {
+      expect(inputEl.val()).to.equal('20.00');
+    });
+    describe('after changing value and blurring out', function () {
+      beforeEach(function () {
+        setValue('10');
+        inputEl.triggerHandler('blur');
+      });
+      it('updates the value', function () {
+        expect(inputEl.val()).to.equal('10.00');
+      });
+    });
+  });
+
+
   describe('min', function () {
     describe('when min < 0', function () {
       beforeEach(function () {
@@ -319,5 +340,4 @@ describe('angular-money-directive', function () {
       });
     });
   });
-
 });
