@@ -25,7 +25,7 @@ gulp.task('dist', function () {
 });
 
 gulp.task('clean', function () {
-  return del(DEST);
+  return del.sync(DEST);
 });
 
 gulp.task('build', ['clean', 'dist']);
