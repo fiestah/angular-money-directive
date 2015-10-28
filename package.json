@@ -1,6 +1,6 @@
 {
   "name": "angular-money-directive",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "AngularJS directive to validate money inputs",
   "main": "dist/angular-money-directive.js",
   "dependencies": {},
