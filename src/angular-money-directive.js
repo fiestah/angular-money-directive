@@ -150,7 +150,7 @@ angular.module('fiestah.money', [])
     });
 
     ngModelCtrl.$formatters.push(function (value) {
-      if (isDefined(value) && isNumber(value)) {
+      if (isDefined(value)) {
         return isPrecisionValid() && isValueValid(value) ?
           formatPrecision(value) : value;
       } else {
