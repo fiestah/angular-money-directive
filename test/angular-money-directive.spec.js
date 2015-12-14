@@ -55,6 +55,18 @@ describe('angular-money-directive', function () {
       expect(form.price.$valid).to.be.true;
     });
   });
+  
+  describe('when ngModel is set to a valid zero (0) value', function () {
+    beforeEach(function () {
+      scope.model.price = 0;
+      setupDirective();
+    });
+
+    it('displays the formatted value', function () {
+      expect(inputEl.val()).to.equal('0.00');
+      expect(form.price.$valid).to.be.true;
+    });
+  });
 
   describe('when ngModel is set to an invalid value', function () {
     beforeEach(function () {
