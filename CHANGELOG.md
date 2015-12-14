@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.5 (Dec 15 2015)
+
+Fix #31: Make the $formatter support `0` correctly.
+
 ## 1.2.4 (Oct 27 2015)
 
 Fix changes not getting committed on blur when ng-model-options="{updateOn: 'blur'}".
