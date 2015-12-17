@@ -66,6 +66,8 @@ angular.module('fiestah.money', [])
 
 
     ngModelCtrl.$parsers.push(function (value) {
+      //Convert value to string, so it will work with input type="number"
+      //User will able to show numeric keyboard 
       if (ngModelCtrl.$isEmpty(value)) {
         lastValidViewValue = value;
         return null;
