@@ -11,7 +11,7 @@ var DEFAULT_PRECISION = 2;
 
 angular.module('fiestah.money', [])
 
-.directive('money', function ($parse) {
+.directive('money', function ($parse, $filter, $locale) {
   function link(scope, el, attrs, ngModelCtrl) {
     var minVal, maxVal, precision, lastValidViewValue;
     var isDefined = angular.isDefined;
@@ -42,6 +42,7 @@ angular.module('fiestah.money', [])
     }
 
     function isValueValid(value) {
+      value = sanitizeValue(value);
       return angular.isNumber(value) && !isNaN(value);
     }
 
@@ -51,11 +52,23 @@ angular.module('fiestah.money', [])
       if (isValueValid(modelValue) && isPrecisionValid()) {
         ngModelCtrl.$modelValue = round(modelValue);
         $parse(attrs.ngModel).assign(scope, ngModelCtrl.$modelValue);
-        changeViewValue(formatPrecision(modelValue));
+        changeViewValue(buildViewValue(modelValue));
 
         // Save the rounded view value
         lastValidViewValue = ngModelCtrl.$viewValue;
       }
+    }
+
+    function sanitizeValue(value) {
+      if(!angular.isNumber(value)){
+        value = value.replace($locale.NUMBER_FORMATS.GROUP_SEP, '');
+        value = value.replace($locale.NUMBER_FORMATS.DECIMAL_SEP, '.');
+      }
+      return value;
+    }
+
+    function buildViewValue(value) {
+      return $filter('number')(value, precision);
     }
 
     function changeViewValue(value) {
@@ -70,6 +83,8 @@ angular.module('fiestah.money', [])
         lastValidViewValue = value;
         return null;
       }
+
+      value = sanitizeValue(value);
 
       // Handle leading decimal point, like ".5"
       if (value.indexOf('.') === 0) {
@@ -132,6 +147,7 @@ angular.module('fiestah.money', [])
 
     // Round off (disabled by "-1")
     if (isDefined(attrs.precision)) {
+      precision = parseInt(attrs.precision, 10);
       attrs.$observe('precision', function (value) {
         precision = parseInt(value, 10);
 
@@ -152,7 +168,7 @@ angular.module('fiestah.money', [])
     ngModelCtrl.$formatters.push(function (value) {
       if (isDefined(value)) {
         return isPrecisionValid() && isValueValid(value) ?
-          formatPrecision(value) : value;
+          buildViewValue(value) : value;
       } else {
         return '';
       }
