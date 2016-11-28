@@ -6,7 +6,7 @@
  * /src/ng/directive/input.js
  */
 
-var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d{0,2})))\s*$/;
 var DEFAULT_PRECISION = 2;
 
 angular.module('fiestah.money', [])
